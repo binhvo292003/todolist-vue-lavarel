@@ -3,7 +3,6 @@ import { ref, onMounted, computed, watch } from 'vue'
 
 const todos = ref([])
 const show_all = ref(false)
-
 const input_content = ref('')
 
 const todos_asc = computed(() => {
@@ -22,58 +21,68 @@ const filteredTodos = computed(() => {
     : todos_asc.value
 })
 
-watch(todos, (newVal) => {
-  localStorage.setItem('todos', JSON.stringify(newVal))
-}, {
-  deep: true
-})
+watch(todos, addTodo)
 
-const addTodo = () => {
+async function addTodo() {
   if (input_content.value.trim() === '') {
     return;
   }
 
-  todos.value.push({
+  const newTodo = {
     title: input_content.value,
     completed: false,
     editable: false,
     createdAt: new Date().getTime()
+  }
+
+  const res = await fetch('http://127.0.0.1:8000/api/todos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newTodo)
   })
 
+  fetchData();
   input_content.value = ""
 }
 
-const removeTodo = (todo) => {
+const removeTodo = async (todo) => {
+  await fetch(`http://127.0.0.1:8000/api/todos/${todo.id}`, {
+    method: 'DELETE'
+  })
   todos.value = todos.value.filter((t) => t !== todo)
+}
+
+const updateTodo = async (todo) => {
+  await fetch(`http://127.0.0.1:8000/api/todos/${todo.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(todo)
+  })
 }
 
 const toggleShowAll = () => {
   show_all.value = !show_all.value;
-  localStorage.clear;
-
 }
 
-const clearStorage = () => {
-  localStorage.removeItem("todos");
+const clearStorage = async () => {
+  await fetch('http://127.0.0.1:8000/api/todos', {
+    method: 'DELETE'
+  })
   todos.value = []
 }
 
 async function fetchData() {
-  clearStorage();
-  todos.value = null
-  const res = await fetch(
-    `https://jsonplaceholder.typicode.com/todos`
-  )
+  const res = await fetch('http://127.0.0.1:8000/api/todos')
   todos.value = await res.json();
-
 }
 
-
 onMounted(() => {
-  todos.value = JSON.parse(localStorage.getItem('todos')) || []
+  fetchData()
 })
-
-fetchData()
 
 </script>
 
@@ -105,12 +114,12 @@ fetchData()
       <div class="list" id="todo-list">
         <div v-for="todo in filteredTodos" :class="`todo-item ${todo.completed && 'done'}`">
           <label>
-            <input type="checkbox" v-model="todo.completed" />
+            <input type="checkbox" v-model="todo.completed" @change="updateTodo(todo)" />
             <span class="bubble business"></span>
           </label>
 
           <div class="todo-content">
-            <input type="text" v-model="todo.title" />
+            <input type="text" v-model="todo.title" @blur="updateTodo(todo)" />
           </div>
 
           <div class="actions">

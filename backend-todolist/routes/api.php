@@ -23,3 +23,4 @@ Route::get('/todos/{todo}/edit', TodoController::class . '@edit')->name('todos.e
 Route::put('/todos/{todo}', TodoController::class . '@update')->name('todos.update');
 // deletes a todo
 Route::delete('/todos/{todo}', TodoController::class . '@destroy')->name('todos.destroy');
+Route::delete('/todos', [TodoController::class, 'destroyAll']);

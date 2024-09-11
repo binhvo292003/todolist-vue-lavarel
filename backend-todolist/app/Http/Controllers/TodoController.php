@@ -24,10 +24,12 @@ class TodoController extends Controller
             'completed' => 'required|boolean',
         ]);
 
-        Todo::create($request->all());
+        $todo = Todo::create($request->all());
 
-        return redirect()->route('todos.index')
-            ->with('success', 'Post created successfully.');;
+        return response()->json([
+            'message' => 'Post created successfully.',
+            'todo' => $todo
+        ], 201);
     }
 
     public function edit(Todo $todo)
@@ -44,13 +46,26 @@ class TodoController extends Controller
 
         $todo->update($request->all());
 
-        return redirect()->route('todos.index');
+        return response()->json([
+            'message' => 'Update todo successfully.'
+        ], 200);
     }
 
     public function destroy(Todo $todo)
     {
         $todo->delete();
 
-        return redirect()->route('todos.index');
+        return response()->json([
+            'message' => 'Delete todo successfully.'
+        ], 200);
+    }
+
+    public function destroyAll()
+    {
+        Todo::truncate();
+
+        return response()->json([
+            'message' => 'Delete all todo successfully.'
+        ], 200);
     }
 }

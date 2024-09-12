@@ -9,18 +9,23 @@
     </div>
 
     <div class="actions">
+        <button class="edit" @click="showModal">Edit</button>
         <button class="delete" @click="removeTodo()">Delete</button>
-        <button class="edit" @click="">Edit</button>
     </div>
+    <TodoModal v-show="isModalVisible" :todo="todo" @close="closeModal" @save="updateTodo" />
+
 </template>
 
 <script setup>
 import axios from 'axios';
 import { ref, computed } from 'vue';
+import TodoModal from './TodoModal.vue';
 
 const props = defineProps(['todo']);
 const emit = defineEmits(['todoChanged']);
 const todo = ref(props.todo);
+
+const isModalVisible = ref(false);
 
 const updateTodo = async () => {
     try {
@@ -43,6 +48,15 @@ const removeTodo = async () => {
         console.error('Error deleting todo:', error);
     }
 }
+
+const showModal = () => {
+    isModalVisible.value = true;
+}
+
+const closeModal = () => {
+    isModalVisible.value = false;
+}
+
 </script>
 
 <style scoped>

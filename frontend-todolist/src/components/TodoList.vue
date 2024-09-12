@@ -6,7 +6,7 @@
             <button class="done-items" @click="clearStorage">Clear</button>
         </div>
         <div class="list" id="todo-list">
-            <div v-for="todo in filteredTodos" :key="todo.id" :class="`todo-item ${todo.completed && 'done'}`">
+            <div v-for="todo in filteredTodos" :key="todo.id" :class="`todo-item`">
                 <TodoItem :todo="todo" v-on:todoChanged="$emit('reloadList')" />
             </div>
         </div>
@@ -23,7 +23,7 @@ import TodoItem from './TodoItem.vue';
 const props = defineProps(['todos']);
 const emit = defineEmits(['reloadList']);
 
-const show_all = ref(false);
+const show_all = ref(true);
 
 const filteredTodos = computed(() => {
     return show_all.value ? props.todos : props.todos.filter(todo => !todo.completed);

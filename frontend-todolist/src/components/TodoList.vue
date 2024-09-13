@@ -7,7 +7,7 @@
         </div>
         <div class="list" id="todo-list">
             <div v-for="todo in filteredTodos" :key="todo.id" :class="`todo-item`">
-                <TodoItem :todo="todo" v-on:todoChanged="$emit('reloadList')" />
+                <TodoItem :todo="todo" @todoChanged="$emit('reloadList')" />
             </div>
         </div>
     </section>

@@ -5,14 +5,14 @@
     </label>
 
     <div class="todo-content">
-        <input type="text" v-model="todo.title" :class="[todo.completed ? 'done' : '']" />
+        <div type="text" :class="[todo.completed ? 'done' : '']">{{ todo.title }}</div>
     </div>
 
     <div class="actions">
         <button class="edit" @click="showModal">Edit</button>
         <button class="delete" @click="removeTodo()">Delete</button>
     </div>
-    <TodoModal v-show="isModalVisible" :todo="todo" @close="closeModal" @save="updateTodo" />
+    <TodoModal v-show="isModalVisible" :todoID="todo.id" @close="closeModal" @save="updateTodo" />
 
 </template>
 
@@ -27,8 +27,11 @@ const todo = ref(props.todo);
 
 const isModalVisible = ref(false);
 
-const updateTodo = async () => {
+const updateTodo = async (todoTitle) => {
     try {
+        if (todoTitle) {
+            todo.value.title = todoTitle;
+        }
         const response = await axios.put(`http://127.0.0.1:8000/api/todos/${todo.value.id}`, todo.value);
         if (response.status === 200) {
             emit('todoChanged');

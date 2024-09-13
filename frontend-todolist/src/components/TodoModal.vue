@@ -23,28 +23,45 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'TodoModal',
-    props: {
-        todo: {
-            type: Object,
-            required: true
-        }
-    },
-    methods: {
-        close() {
-            this.$emit('close');
-        },
-        save() {
-            this.$emit('save', this.todo);
-            this.close();
-        }
+<script setup>
+import axios from 'axios';
+import { defineProps, defineEmits, ref } from 'vue';
+
+const props = defineProps({
+    todoID: {
+        type: Number,
+        required: true
+    }
+});
+
+const todo = ref({});
+
+const emit = defineEmits(['close', 'save']);
+
+const close = () => {
+    emit('close');
+};
+
+const save = () => {
+    emit('save', todo.value.title);
+    close();
+};
+
+const getTodo = async () => {
+    try {
+        console.log(props.todoID);
+        const response = await axios.get(`http://localhost:8000/api/todos/${props.todoID}`);
+        todo.value = response.data;
+    } catch (e) {
+        console.error('Error fetching todo:', e);
     }
 };
+
+getTodo();
+
 </script>
 
-<style>
+<style scoped>
 .modal-backdrop {
     position: fixed;
     top: 0;

@@ -16,7 +16,7 @@ Route::get('/todos/create', TodoController::class . '@create')->name('todos.crea
 // adds a todo to the database
 Route::post('/todos', TodoController::class . '@store')->name('todos.store');
 // returns a page that shows a full todo
-Route::get('/todos/{todo}', TodoController::class . '@show')->name('todos.show');
+Route::get('/todos/{id}', TodoController::class . '@show')->name('todos.show');
 // returns the form for editing a todo
 Route::get('/todos/{todo}/edit', TodoController::class . '@edit')->name('todos.edit');
 // updates a todo
